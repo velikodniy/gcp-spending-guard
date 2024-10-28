@@ -145,3 +145,11 @@ resource "google_project_service" "pubsub" {
   disable_dependent_services = true
   disable_on_destroy         = false
 }
+
+resource "google_project_service" "eventarc" {
+  project = var.project_id
+  service = "eventarc.googleapis.com"
+
+  disable_dependent_services = true
+  disable_on_destroy         = false
+}

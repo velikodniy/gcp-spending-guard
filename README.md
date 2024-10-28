@@ -32,6 +32,7 @@ Note that the following APIs will be enabled automatically:
   - Cloud Functions API
   - Billing Budgets API
   - Pub/Sub API
+  - Eventarc API
 
 ## Providers
 
