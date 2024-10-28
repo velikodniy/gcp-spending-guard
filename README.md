@@ -13,7 +13,7 @@ This Terraform/OpenTofu module creates a hard spending limit for Google Cloud Pl
 
 ```hcl
 module "budget_control" {
-  source = "github.com/velikodniy/gcp-spending-limit"
+  source = "github.com/velikodniy/gcp-spending-guard"
 
   project_id         = "your-project-id"
   billing_account_id = "your-billing-account-id"
