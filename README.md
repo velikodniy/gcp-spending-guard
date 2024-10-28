@@ -30,8 +30,7 @@ module "budget_control" {
 
 Note that the following APIs will be enabled automatically:
   - Cloud Functions API
-  - Cloud Build API
-  - Cloud Billing API
+  - Billing Budgets API
   - Pub/Sub API
 
 ## Providers

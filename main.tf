@@ -121,17 +121,9 @@ resource "google_project_service" "cloud_functions" {
   disable_on_destroy        = false
 }
 
-resource "google_project_service" "cloud_build" {
+resource "google_project_service" "billing_budgets" {
   project = var.project_id
-  service = "cloudbuild.googleapis.com"
-
-  disable_dependent_services = true
-  disable_on_destroy        = false
-}
-
-resource "google_project_service" "cloud_billing" {
-  project = var.project_id
-  service = "cloudbilling.googleapis.com"
+  service = "billingbudgets.googleapis.com"
 
   disable_dependent_services = true
   disable_on_destroy        = false
