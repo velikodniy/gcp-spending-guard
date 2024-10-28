@@ -49,6 +49,7 @@ resource "google_cloudfunctions2_function" "budget_control" {
     google_project_service.cloud_functions,
     google_storage_bucket_object.function_code,
     google_pubsub_topic.budget_alert,
+    google_project_service.eventarc,
   ]
 
   build_config {
