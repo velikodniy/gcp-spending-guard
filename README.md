@@ -27,7 +27,8 @@ module "budget_control" {
 - Terraform >= 1.0.0
 - Google Cloud Provider >= 4.0.0
 - Archive Provider >= 2.0.0
-- Google Cloud project with the following APIs enabled:
+
+Note that the following APIs will be enabled automatically:
   - Cloud Functions API
   - Cloud Build API
   - Cloud Billing API

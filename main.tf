@@ -111,3 +111,36 @@ resource "google_pubsub_topic_iam_member" "pubsub_subscriber" {
   role    = "roles/pubsub.subscriber"
   member  = "serviceAccount:${google_service_account.budget_control.email}"
 }
+
+# Enable required APIs
+resource "google_project_service" "cloud_functions" {
+  project = var.project_id
+  service = "cloudfunctions.googleapis.com"
+
+  disable_dependent_services = true
+  disable_on_destroy        = false
+}
+
+resource "google_project_service" "cloud_build" {
+  project = var.project_id
+  service = "cloudbuild.googleapis.com"
+
+  disable_dependent_services = true
+  disable_on_destroy        = false
+}
+
+resource "google_project_service" "cloud_billing" {
+  project = var.project_id
+  service = "cloudbilling.googleapis.com"
+
+  disable_dependent_services = true
+  disable_on_destroy        = false
+}
+
+resource "google_project_service" "pubsub" {
+  project = var.project_id
+  service = "pubsub.googleapis.com"
+
+  disable_dependent_services = true
+  disable_on_destroy        = false
+}
