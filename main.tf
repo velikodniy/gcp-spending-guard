@@ -9,7 +9,7 @@ resource "google_pubsub_topic" "budget_alert" {
 resource "google_billing_budget" "budget" {
   billing_account = var.billing_account_id
   display_name    = var.budget_display_name
-  depends_on = [ google_project_service.billing_budgets ]
+  depends_on = [ google_project_service.billing_budgets, google_pubsub_topic.budget_alert ]
 
   budget_filter {
     projects = ["projects/${var.project_id}"]
