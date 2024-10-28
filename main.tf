@@ -2,12 +2,14 @@
 resource "google_pubsub_topic" "budget_alert" {
   name    = var.pubsub_topic_name
   project = var.project_id
+  depends_on = [ google_project_service.pubsub ]
 }
 
 # Create the budget with alert
 resource "google_billing_budget" "budget" {
   billing_account = var.billing_account_id
   display_name    = var.budget_display_name
+  depends_on = [ google_project_service.billing_budgets ]
 
   budget_filter {
     projects = ["projects/${var.project_id}"]
@@ -43,6 +45,11 @@ resource "google_cloudfunctions2_function" "budget_control" {
   location    = var.region
   project     = var.project_id
   description = "Function to disable billing when budget is exceeded"
+  depends_on = [
+    google_project_service.cloud_functions, 
+    google_storage_bucket_object.function_code,
+    google_pubsub_topic.budget_alert,
+  ]
 
   build_config {
     runtime     = "nodejs18"
@@ -86,6 +93,8 @@ resource "google_storage_bucket" "function_bucket" {
 # Upload function code to bucket
 resource "google_storage_bucket_object" "function_code" {
   name   = "function-source-${data.archive_file.function_source.output_md5}.zip"
+  depends_on = [ google_storage_bucket.function_bucket ]
+
   bucket = google_storage_bucket.function_bucket.name
   source = data.archive_file.function_source.output_path
 }
