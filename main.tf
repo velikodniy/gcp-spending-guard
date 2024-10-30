@@ -123,13 +123,13 @@ resource "google_pubsub_topic_iam_member" "pubsub_subscriber" {
 
 # Enable required APIs
 resource "google_project_service" "services" {
-  for_each = [
+  for_each = toset([
     "billingbudgets.googleapis.com",
     "cloudfunctions.googleapis.com",
     "eventarc.googleapis.com",
     "pubsub.googleapis.com",
     "run.googleapis.com",
-  ]
+  ])
 
   project = var.project_id
   service = each.value
