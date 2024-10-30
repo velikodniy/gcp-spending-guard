@@ -29,10 +29,12 @@ module "budget_control" {
 - Archive Provider >= 2.0.0
 
 Note that the following APIs will be enabled automatically:
-  - Cloud Functions API
-  - Billing Budgets API
-  - Pub/Sub API
-  - Eventarc API
+
+- `billingbudgets.googleapis.com`,
+- `cloudfunctions.googleapis.com`,
+- `eventarc.googleapis.com`,
+- `pubsub.googleapis.com`,
+- `run.googleapis.com`.
 
 ## Providers
 

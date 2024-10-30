@@ -2,14 +2,14 @@
 resource "google_pubsub_topic" "budget_alert" {
   name       = var.pubsub_topic_name
   project    = var.project_id
-  depends_on = [google_project_service.pubsub]
+  depends_on = [google_project_service.services]
 }
 
 # Create the budget with alert
 resource "google_billing_budget" "budget" {
   billing_account = var.billing_account_id
   display_name    = var.budget_display_name
-  depends_on      = [google_project_service.billing_budgets, google_pubsub_topic.budget_alert]
+  depends_on      = [google_project_service.services]
 
   budget_filter {
     projects = ["projects/${var.project_id}"]
@@ -46,10 +46,9 @@ resource "google_cloudfunctions2_function" "budget_control" {
   project     = var.project_id
   description = "Function to disable billing when budget is exceeded"
   depends_on = [
-    google_project_service.cloud_functions,
+    google_project_service.services,
     google_storage_bucket_object.function_code,
     google_pubsub_topic.budget_alert,
-    google_project_service.eventarc,
   ]
 
   build_config {
@@ -123,33 +122,17 @@ resource "google_pubsub_topic_iam_member" "pubsub_subscriber" {
 }
 
 # Enable required APIs
-resource "google_project_service" "cloud_functions" {
+resource "google_project_service" "services" {
+  for_each = [
+    "billingbudgets.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "eventarc.googleapis.com",
+    "pubsub.googleapis.com",
+    "run.googleapis.com",
+  ]
+
   project = var.project_id
-  service = "cloudfunctions.googleapis.com"
-
-  disable_dependent_services = true
-  disable_on_destroy         = false
-}
-
-resource "google_project_service" "billing_budgets" {
-  project = var.project_id
-  service = "billingbudgets.googleapis.com"
-
-  disable_dependent_services = true
-  disable_on_destroy         = false
-}
-
-resource "google_project_service" "pubsub" {
-  project = var.project_id
-  service = "pubsub.googleapis.com"
-
-  disable_dependent_services = true
-  disable_on_destroy         = false
-}
-
-resource "google_project_service" "eventarc" {
-  project = var.project_id
-  service = "eventarc.googleapis.com"
+  service = each.value
 
   disable_dependent_services = true
   disable_on_destroy         = false
