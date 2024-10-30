@@ -125,6 +125,7 @@ resource "google_pubsub_topic_iam_member" "pubsub_subscriber" {
 resource "google_project_service" "services" {
   for_each = toset([
     "billingbudgets.googleapis.com",
+    "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
     "eventarc.googleapis.com",
     "pubsub.googleapis.com",
