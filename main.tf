@@ -127,6 +127,7 @@ resource "google_project_service" "services" {
     "billingbudgets.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
     "eventarc.googleapis.com",
     "pubsub.googleapis.com",
     "run.googleapis.com",
