@@ -5,7 +5,7 @@ provider "google" {
 }
 
 data "google_project" "project" {
-    project_id = var.project_id
+  project_id = var.project_id
 }
 
 # Create Pub/Sub topic for budget notifications
@@ -46,7 +46,16 @@ resource "google_billing_budget" "budget" {
 data "archive_file" "function_source" {
   type        = "zip"
   output_path = "${path.module}/function/function-source.zip"
-  source_dir  = "${path.module}/function"
+
+  source {
+    content  = file("${path.module}/function/index.js")
+    filename = "index.js"
+  }
+
+  source {
+    content  = file("${path.module}/function/package.json")
+    filename = "package.json"
+  }
 }
 
 # Create Cloud Function
@@ -119,8 +128,8 @@ resource "google_service_account" "budget_control" {
 # Grant billing admin permissions to the service account
 resource "google_billing_account_iam_member" "billing_admin" {
   billing_account_id = var.billing_account_id
-  role   = "roles/billing.user"
-  member = "serviceAccount:${google_service_account.budget_control.email}"
+  role               = "roles/billing.user"
+  member             = "serviceAccount:${google_service_account.budget_control.email}"
 }
 
 resource "google_project_iam_member" "billing_admin" {
