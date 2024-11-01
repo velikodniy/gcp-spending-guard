@@ -18,6 +18,7 @@ module "budget_control" {
   project_id         = "your-project-id"
   billing_account_id = "your-billing-account-id"
   budget_amount      = 100  # Maximum budget in whole units
+  currency_code      = "GBP" # Must match the billing currency code
   region             = "us-central1"
 }
 ```
