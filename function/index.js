@@ -6,7 +6,7 @@ const billing = new CloudBillingClient();
 
 async function isBillingEnabled(projectName) {
     try {
-        const [{billingEnabled}] = await billing.getProjectBillingInfo({ name: projectName });
+        const [{ billingEnabled }] = await billing.getProjectBillingInfo({ name: projectName });
         return billingEnabled;
     } catch (e) {
         console.log('Unable to determine if billing is enabled, assuming it is');
@@ -23,8 +23,9 @@ async function disableBilling(projectName) {
 }
 
 async function processBudgetAlert(pubsubEvent) {
+    const pubsubDataBase64 = pubsubEvent.data;
     const pubsubData = JSON.parse(
-        Buffer.from(pubsubEvent.data, 'base64').toString()
+        Buffer.from(pubsubDataBase64, 'base64').toString()
     );
 
     if (pubsubData.costAmount <= pubsubData.budgetAmount) {
