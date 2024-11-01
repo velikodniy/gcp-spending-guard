@@ -1,3 +1,9 @@
+provider "google" {
+  project               = var.project_id
+  billing_project       = var.project_id
+  user_project_override = true
+}
+
 # Create Pub/Sub topic for budget notifications
 resource "google_pubsub_topic" "budget_alert" {
   name       = var.pubsub_topic_name
