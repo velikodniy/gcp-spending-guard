@@ -4,6 +4,10 @@ provider "google" {
   user_project_override = true
 }
 
+data "google_project" "project" {
+    project_id = var.project_id
+}
+
 # Create Pub/Sub topic for budget notifications
 resource "google_pubsub_topic" "budget_alert" {
   name       = var.pubsub_topic_name
@@ -18,7 +22,7 @@ resource "google_billing_budget" "budget" {
   depends_on      = [google_project_service.services]
 
   budget_filter {
-    projects = ["projects/${var.project_id}"]
+    projects = ["projects/${data.google_project.project.number}"]
   }
 
   amount {
