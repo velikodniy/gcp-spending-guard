@@ -117,11 +117,18 @@ resource "google_service_account" "budget_control" {
 }
 
 # Grant billing admin permissions to the service account
+resource "google_billing_account_iam_member" "billing_admin" {
+  billing_account_id = var.billing_account_id
+  role   = "roles/billing.user"
+  member = "serviceAccount:${google_service_account.budget_control.email}"
+}
+
 resource "google_project_iam_member" "billing_admin" {
   project = var.project_id
-  role    = "roles/billing.admin"
+  role    = "roles/billing.projectManager"
   member  = "serviceAccount:${google_service_account.budget_control.email}"
 }
+
 
 # Grant Pub/Sub subscriber permissions to the service account
 resource "google_pubsub_topic_iam_member" "pubsub_subscriber" {
