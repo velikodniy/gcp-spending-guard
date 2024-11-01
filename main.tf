@@ -45,7 +45,7 @@ resource "google_billing_budget" "budget" {
 # Create Cloud Function to disable billing
 data "archive_file" "function_source" {
   type        = "zip"
-  output_path = "${path.module}/function-source.zip"
+  output_path = "${path.module}/function/function-source.zip"
   source_dir  = "${path.module}/function"
 }
 
