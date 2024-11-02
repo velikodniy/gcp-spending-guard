@@ -32,6 +32,7 @@ module "budget_control" {
 Note that the following APIs will be enabled automatically:
 
 - `billingbudgets.googleapis.com`,
+- `cloudbilling.googleapis.com`,
 - `cloudbuild.googleapis.com`,
 - `cloudfunctions.googleapis.com`,
 - `cloudresourcemanager.googleapis.com`,
