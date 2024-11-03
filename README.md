@@ -125,7 +125,7 @@ You'll need to add billing account manually to re-enable them.
 | function_name   | The name of the deployed Cloud Function               |
 | budget_name     | The resource name of the budget                       |
 
-# Development
+## Development
 
 Make sure that you have installed [`pre-commit`](https://pre-commit.com) and enabled the hooks:
 
