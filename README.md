@@ -11,6 +11,8 @@ This Terraform/OpenTofu module creates a hard spending limit for Google Cloud Pl
 
 ## Usage
 
+To test the module you can create `main.tf`:
+
 ```hcl
 module "budget_control" {
   source = "github.com/velikodniy/gcp-spending-guard"
@@ -23,6 +25,35 @@ module "budget_control" {
 }
 ```
 
+Note that the currency code should match the billing region.
+
+To apply the changes, execute (replace `tofu` with `terraform` if you use Terraform):
+
+```sh
+tofu init -upgrade
+tofu apply
+```
+
+### Test
+
+To test the infrastructure you can publish an alert manually:
+
+```sh
+gcloud pubsub topics publish budget-alerts --message='{
+    "budgetDisplayName": "Project Budget",
+    "currencyCode": "GBP",
+    "costIntervalStart": "2024-01-01T00:00:00Z",
+    "costAmount": 10.01,
+    "budgetAmount": 10.00,
+    "budgetAmountType": "SPECIFIED_AMOUNT",
+    "alertThresholdExceeded": 1.0
+}'
+```
+
+You might need to update the topic name (it's `budget-alerts` in the example).
+You don't have to change the body of the message.
+The only significant part is the fact that `costAmount` > `budgetAmount`.
+
 ## Requirements
 
 - Terraform >= 1.0.0
@@ -31,14 +62,14 @@ module "budget_control" {
 
 Note that the following APIs will be enabled automatically:
 
-- `billingbudgets.googleapis.com`,
-- `cloudbilling.googleapis.com`,
-- `cloudbuild.googleapis.com`,
-- `cloudfunctions.googleapis.com`,
-- `cloudresourcemanager.googleapis.com`,
-- `eventarc.googleapis.com`,
-- `pubsub.googleapis.com`,
-- `run.googleapis.com`.
+- `billingbudgets.googleapis.com`
+- `cloudbilling.googleapis.com`
+- `cloudbuild.googleapis.com`
+- `cloudfunctions.googleapis.com`
+- `cloudresourcemanager.googleapis.com`
+- `eventarc.googleapis.com`
+- `pubsub.googleapis.com`
+- `run.googleapis.com`
 
 ## Providers
 
@@ -67,13 +98,3 @@ Note that the following APIs will be enabled automatically:
 | pubsub_topic_id | The ID of the Pub/Sub topic created for budget alerts |
 | function_name   | The name of the deployed Cloud Function               |
 | budget_name     | The resource name of the budget                       |
-
-## Notes
-
-1. The Cloud Function will automatically disable billing for the project when the budget threshold is reached.
-2. Make sure the service account has the necessary permissions to disable billing.
-3. Test the setup with a small budget first to ensure it works as expected.
-
-## License
-
-MIT Licensed. See LICENSE for full details.
