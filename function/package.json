@@ -1,7 +1,7 @@
 {
-    "name": "cloud-functions-billing",
-    "version": "0.0.1",
-    "dependencies": {
-        "@google-cloud/billing": "^4.5.0"
-    }
+  "name": "cloud-functions-billing",
+  "version": "0.0.1",
+  "dependencies": {
+    "@google-cloud/billing": "^4.5.0"
+  }
 }

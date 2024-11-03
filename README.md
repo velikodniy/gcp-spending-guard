@@ -101,3 +101,11 @@ Note that the following APIs will be enabled automatically:
 | pubsub_topic_id | The ID of the Pub/Sub topic created for budget alerts |
 | function_name   | The name of the deployed Cloud Function               |
 | budget_name     | The resource name of the budget                       |
+
+# Development
+
+Make sure that you have installed [`pre-commit`](https://pre-commit.com) and enabled the hooks:
+
+```sh
+pre-commit install
+```
