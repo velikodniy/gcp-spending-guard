@@ -11,11 +11,7 @@ This Terraform/OpenTofu module creates a hard spending limit for Google Cloud Pl
 
 ## Requirements
 
-- Terraform >= 1.0.0
-- Google Cloud Provider >= 4.0.0
-- Archive Provider >= 2.0.0
-
-Note that the following APIs should be enabled to create the resources:
+The following APIs should be enabled to create the resources:
 
 - `billingbudgets.googleapis.com`
 - `cloudbilling.googleapis.com`
