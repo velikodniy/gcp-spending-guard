@@ -9,19 +9,70 @@ This Terraform/OpenTofu module creates a hard spending limit for Google Cloud Pl
 - Deploys a Cloud Function that automatically disables project billing when the budget is exceeded
 - Configures necessary IAM permissions and service accounts
 
+## Requirements
+
+- Terraform >= 1.0.0
+- Google Cloud Provider >= 4.0.0
+- Archive Provider >= 2.0.0
+
+Note that the following APIs should be enabled to create the resources:
+
+- `billingbudgets.googleapis.com`
+- `cloudbilling.googleapis.com`
+- `cloudbuild.googleapis.com`
+- `cloudfunctions.googleapis.com`
+- `cloudresourcemanager.googleapis.com`
+- `eventarc.googleapis.com`
+- `pubsub.googleapis.com`
+- `run.googleapis.com`
+
 ## Usage
 
 To test the module you can create `main.tf`:
 
 ```hcl
-module "budget_control" {
-  source = "github.com/velikodniy/gcp-spending-guard"
-
-  project_id         = "your-project-id"
-  billing_account_id = "your-billing-account-id"
-  budget_amount      = 100  # Maximum budget in whole units
+locals {
+  project_id         = "<project-id>"
+  billing_account_id = "<billing-account-id>"
+  budget_amount      = 1     # Maximum budget in whole units
   currency_code      = "GBP" # Must match the billing currency code
   region             = "us-central1"
+}
+
+provider "google" {
+  project               = local.project_id
+  billing_project       = local.project_id
+  user_project_override = true
+}
+
+# Enable required APIs
+resource "google_project_service" "services" {
+  for_each = toset([
+    "billingbudgets.googleapis.com",
+    "cloudbilling.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "eventarc.googleapis.com",
+    "pubsub.googleapis.com",
+    "run.googleapis.com",
+  ])
+  service = each.value
+
+  disable_dependent_services = true
+  disable_on_destroy         = false
+}
+
+module "budget_control" {
+  source = "../gcp-spending-guard"
+
+  project_id         = local.project_id
+  billing_account_id = local.billing_account_id
+  budget_amount      = local.budget_amount
+  currency_code      = local.currency_code
+  region             = local.region
+
+  depends_on = [google_project_service.services]
 }
 ```
 
@@ -56,23 +107,6 @@ The only significant part is the fact that `costAmount` > `budgetAmount`.
 
 Once the command is executed, you'll see in the console that functions, buckets and other paid services are disabled.
 You'll need to add billing account manually to re-enable them.
-
-## Requirements
-
-- Terraform >= 1.0.0
-- Google Cloud Provider >= 4.0.0
-- Archive Provider >= 2.0.0
-
-Note that the following APIs will be enabled automatically:
-
-- `billingbudgets.googleapis.com`
-- `cloudbilling.googleapis.com`
-- `cloudbuild.googleapis.com`
-- `cloudfunctions.googleapis.com`
-- `cloudresourcemanager.googleapis.com`
-- `eventarc.googleapis.com`
-- `pubsub.googleapis.com`
-- `run.googleapis.com`
 
 ## Providers
 

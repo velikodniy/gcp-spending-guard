@@ -1,10 +1,3 @@
-# Default project settings
-provider "google" {
-  project               = var.project_id
-  billing_project       = var.project_id
-  user_project_override = true
-}
-
 data "google_project" "project" {
   project_id = var.project_id
 }
@@ -13,14 +6,12 @@ data "google_project" "project" {
 resource "google_pubsub_topic" "budget_alert" {
   name       = var.pubsub_topic_name
   project    = var.project_id
-  depends_on = [google_project_service.services]
 }
 
 # Create the budget with alert
 resource "google_billing_budget" "budget" {
   billing_account = var.billing_account_id
   display_name    = var.budget_display_name
-  depends_on      = [google_project_service.services]
 
   budget_filter {
     projects = ["projects/${data.google_project.project.number}"]
@@ -65,7 +56,6 @@ resource "google_cloudfunctions2_function" "budget_control" {
   location    = var.region
   project     = var.project_id
   description = "Function to disable billing when budget is exceeded"
-  depends_on = [google_project_service.services]
 
   build_config {
     runtime     = "nodejs20"
@@ -162,24 +152,4 @@ resource "google_pubsub_topic_iam_member" "pubsub_subscriber" {
   topic      = google_pubsub_topic.budget_alert.name
   role       = "roles/pubsub.subscriber"
   member     = "serviceAccount:${google_service_account.budget_control.email}"
-}
-
-# Enable required APIs
-resource "google_project_service" "services" {
-  for_each = toset([
-    "billingbudgets.googleapis.com",
-    "cloudbilling.googleapis.com",
-    "cloudbuild.googleapis.com",
-    "cloudfunctions.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "eventarc.googleapis.com",
-    "pubsub.googleapis.com",
-    "run.googleapis.com",
-  ])
-
-  project = var.project_id
-  service = each.value
-
-  disable_dependent_services = true
-  disable_on_destroy         = false
 }
