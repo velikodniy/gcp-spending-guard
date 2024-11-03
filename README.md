@@ -64,7 +64,7 @@ resource "google_project_service" "services" {
 }
 
 module "budget_control" {
-  source = "../gcp-spending-guard"
+  source = "github.com/velikodniy/gcp-spending-guard"
 
   project_id         = local.project_id
   billing_account_id = local.billing_account_id
