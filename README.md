@@ -54,6 +54,9 @@ You might need to update the topic name (it's `budget-alerts` in the example).
 You don't have to change the body of the message.
 The only significant part is the fact that `costAmount` > `budgetAmount`.
 
+Once the command is executed, you'll see in the console that functions, buckets and other paid services are disabled.
+You'll need to add billing account manually to re-enable them.
+
 ## Requirements
 
 - Terraform >= 1.0.0
