@@ -104,13 +104,6 @@ The only significant part is the fact that `costAmount` > `budgetAmount`.
 Once the command is executed, you'll see in the console that functions, buckets and other paid services are disabled.
 You'll need to add billing account manually to re-enable them.
 
-## Providers
-
-| Name    | Version  |
-| ------- | -------- |
-| google  | >= 4.0.0 |
-| archive | >= 2.0.0 |
-
 ## Inputs
 
 | Name                | Description                      | Type   | Default          | Required |
