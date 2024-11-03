@@ -91,6 +91,8 @@ resource "google_cloudfunctions2_function" "budget_control" {
     environment_variables = {
       GOOGLE_CLOUD_PROJECT = var.project_id
     }
+
+    ingress_settings = "ALLOW_INTERNAL_ONLY"
   }
 
   event_trigger {
@@ -132,14 +134,14 @@ resource "google_billing_account_iam_member" "billing_admin" {
   billing_account_id = var.billing_account_id
   role               = "roles/billing.user"
   member             = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on = [ google_service_account.budget_control ]
+  depends_on         = [google_service_account.budget_control]
 }
 
 resource "google_project_iam_member" "billing_admin" {
-  project = var.project_id
-  role    = "roles/billing.projectManager"
-  member  = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on = [ google_service_account.budget_control ]
+  project    = var.project_id
+  role       = "roles/billing.projectManager"
+  member     = "serviceAccount:${google_service_account.budget_control.email}"
+  depends_on = [google_service_account.budget_control]
 }
 
 resource "google_cloudfunctions2_function_iam_member" "invoker" {
@@ -148,25 +150,25 @@ resource "google_cloudfunctions2_function_iam_member" "invoker" {
   cloud_function = google_cloudfunctions2_function.budget_control.name
   role           = "roles/cloudfunctions.invoker"
   member         = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on = [ google_service_account.budget_control, google_cloudfunctions2_function.budget_control ]
+  depends_on     = [google_service_account.budget_control, google_cloudfunctions2_function.budget_control]
 }
 
 resource "google_cloud_run_service_iam_member" "cloud_run_invoker" {
-  project  = google_cloudfunctions2_function.budget_control.project
-  location = google_cloudfunctions2_function.budget_control.location
-  service  = google_cloudfunctions2_function.budget_control.name
-  role     = "roles/run.invoker"
-  member   = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on = [ google_service_account.budget_control, google_cloudfunctions2_function.budget_control ]
+  project    = google_cloudfunctions2_function.budget_control.project
+  location   = google_cloudfunctions2_function.budget_control.location
+  service    = google_cloudfunctions2_function.budget_control.name
+  role       = "roles/run.invoker"
+  member     = "serviceAccount:${google_service_account.budget_control.email}"
+  depends_on = [google_service_account.budget_control, google_cloudfunctions2_function.budget_control]
 }
 
 # Grant Pub/Sub subscriber permissions to the service account
 resource "google_pubsub_topic_iam_member" "pubsub_subscriber" {
-  project = var.project_id
-  topic   = google_pubsub_topic.budget_alert.name
-  role    = "roles/pubsub.subscriber"
-  member  = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on = [ google_service_account.budget_control, google_pubsub_topic.budget_alert ]
+  project    = var.project_id
+  topic      = google_pubsub_topic.budget_alert.name
+  role       = "roles/pubsub.subscriber"
+  member     = "serviceAccount:${google_service_account.budget_control.email}"
+  depends_on = [google_service_account.budget_control, google_pubsub_topic.budget_alert]
 }
 
 # Enable required APIs
