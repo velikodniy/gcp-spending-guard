@@ -1,3 +1,4 @@
+# Default project settings
 provider "google" {
   project               = var.project_id
   billing_project       = var.project_id
@@ -64,18 +65,14 @@ resource "google_cloudfunctions2_function" "budget_control" {
   location    = var.region
   project     = var.project_id
   description = "Function to disable billing when budget is exceeded"
-  depends_on = [
-    google_project_service.services,
-    google_storage_bucket_object.function_code,
-    google_pubsub_topic.budget_alert,
-  ]
+  depends_on = [google_project_service.services]
 
   build_config {
     runtime     = "nodejs20"
     entry_point = "processBudgetAlert"
     source {
       storage_source {
-        bucket = google_storage_bucket.function_bucket.name
+        bucket = google_storage_bucket_object.function_code.bucket
         object = google_storage_bucket_object.function_code.name
       }
     }
@@ -106,7 +103,7 @@ resource "google_cloudfunctions2_function" "budget_control" {
 
 # Create storage bucket for Cloud Function code
 resource "google_storage_bucket" "function_bucket" {
-  name     = "${var.project_id}-function-source"
+  name     = "${var.project_id}-budget-control-function-source"
   location = var.region
   project  = var.project_id
 
@@ -124,7 +121,7 @@ resource "google_storage_bucket_object" "function_code" {
 
 # Create service account for the function
 resource "google_service_account" "budget_control" {
-  account_id   = "budget-control-sa"
+  account_id   = var.service_account_id
   display_name = "Budget Control Function Service Account"
   project      = var.project_id
 }
@@ -134,23 +131,21 @@ resource "google_billing_account_iam_member" "billing_admin" {
   billing_account_id = var.billing_account_id
   role               = "roles/billing.user"
   member             = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on         = [google_service_account.budget_control]
 }
 
 resource "google_project_iam_member" "billing_admin" {
   project    = var.project_id
   role       = "roles/billing.projectManager"
   member     = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on = [google_service_account.budget_control]
 }
 
+# Allow function calling
 resource "google_cloudfunctions2_function_iam_member" "invoker" {
   project        = google_cloudfunctions2_function.budget_control.project
   location       = google_cloudfunctions2_function.budget_control.location
   cloud_function = google_cloudfunctions2_function.budget_control.name
   role           = "roles/cloudfunctions.invoker"
   member         = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on     = [google_service_account.budget_control, google_cloudfunctions2_function.budget_control]
 }
 
 resource "google_cloud_run_service_iam_member" "cloud_run_invoker" {
@@ -159,7 +154,6 @@ resource "google_cloud_run_service_iam_member" "cloud_run_invoker" {
   service    = google_cloudfunctions2_function.budget_control.name
   role       = "roles/run.invoker"
   member     = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on = [google_service_account.budget_control, google_cloudfunctions2_function.budget_control]
 }
 
 # Grant Pub/Sub subscriber permissions to the service account
@@ -168,7 +162,6 @@ resource "google_pubsub_topic_iam_member" "pubsub_subscriber" {
   topic      = google_pubsub_topic.budget_alert.name
   role       = "roles/pubsub.subscriber"
   member     = "serviceAccount:${google_service_account.budget_control.email}"
-  depends_on = [google_service_account.budget_control, google_pubsub_topic.budget_alert]
 }
 
 # Enable required APIs
