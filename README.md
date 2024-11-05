@@ -117,14 +117,6 @@ You'll need to add billing account manually to re-enable them.
 | pubsub_topic_name   | The name for the Pub/Sub topic   | string | "budget-alerts"  |    no    |
 | function_name       | The name for the Cloud Function  | string | "budget-control" |    no    |
 
-## Outputs
-
-| Name            | Description                                           |
-| --------------- | ----------------------------------------------------- |
-| pubsub_topic_id | The ID of the Pub/Sub topic created for budget alerts |
-| function_name   | The name of the deployed Cloud Function               |
-| budget_name     | The resource name of the budget                       |
-
 ## Development
 
 Make sure that you have installed [`pre-commit`](https://pre-commit.com) and enabled the hooks:
